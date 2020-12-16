@@ -12,9 +12,10 @@ const TreeSchema = new Schema({
     rented_by: {type: Schema.Types.ObjectId, ref: 'User'},
     start_date_rent: Date,
     end_date_rent: Date,
-    picture: {type: String, default: "https://www.entrefleuristes.com/custom/ebiz/img/article/sapin-de-noel-nordmann-entrefleuristes-0213-500.jpg"},
-    timestamps: {createdAt: 'createdAt', updatedAt:'updatedAt'}
-});
+    picture: {type: String, default: "https://www.entrefleuristes.com/custom/ebiz/img/article/sapin-de-noel-nordmann-entrefleuristes-0213-500.jpg"}
+},
+{timestamps: {createdAt: 'created_at', updatedAt:'updatedAt'}}
+);
 
 const TreeModel = mongoose.model('Tree', TreeSchema);
 module.exports = TreeModel;

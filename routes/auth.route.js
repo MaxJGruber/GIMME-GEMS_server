@@ -7,7 +7,7 @@ const getAge = require('get-age')
 const salt = 10;
 
 router.post('/signup', async (req, res, next) => {
-    const { email, password, firstName, lastName, birthDate } = req.body
+    const { email, password, firstName, lastName, birthDate, isNL, phoneNumber, address, agree } = req.body
     const userAge = getAge(birthDate)
     try {
         const userEmail = await UserModel.findOne({ email });
@@ -18,11 +18,11 @@ router.post('/signup', async (req, res, next) => {
             res.status(400).json({message: 'Too young to use this app'});
         } else {
             const hashedPassword = bcrypt.hashSync(password, salt);
-            const newUser = { email, password: hashedPassword, firstName, lastName, birthDate };
+            const newUser = { email, password: hashedPassword, firstName, lastName, birthDate, isNL, phoneNumber, address, agree};
             const createdUser = await UserModel.create(newUser);
             res.status(200).json(createdUser);
             req.session.currentUser = createdUser._id
-            // res.redirect('/api/auth/isLoggedIn')
+            res.redirect('/api/auth/isLoggedIn')
         }
     } catch(err) {
         res.status(500)
@@ -49,17 +49,18 @@ router.post('/signin', async (req, res, next) => {
     const {email, password} = req.body;
     try {
         const foundUser = await UserModel.findOne({email});
-        // console.log(foundUser);
+        console.log(foundUser);
         const isValidPassword = bcrypt.compareSync(password, foundUser.password)
+        console.log(isValidPassword)
         if (!foundUser || !isValidPassword) {
             return res.status(400).json({message: 'invalid credentials'})
         }
         req.session.currentUser = foundUser._id;
-        res.status(200).json({message: "user logged In"})
-        // res.redirect('/api/auth/isLoggedIn')
+        res.status(200)
+        res.redirect('/api/auth/isLoggedIn')
         // console.log(req.session.currentUser);
     } catch(err) {
-        res.status(500)
+        res.status(500).json(err)
         next(err)
     }
 })

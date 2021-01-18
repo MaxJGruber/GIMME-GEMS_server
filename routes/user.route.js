@@ -1,25 +1,32 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const UserModel = require("../models/User.model")
+const UserModel = require("../models/User.model");
 
-router.patch('/edit', async (req, res, next) => {
-    try {
-        const updatedUser = await UserModel.findByIdAndUpdate(req.session.currentUser, req.body, {new: true})
-        res.status(300).json(updatedUser)
-    } catch(err) {
-        res.status(500)
-        next(err)
-    }
-})
+router.patch("/edit", async (req, res, next) => {
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      req.session.currentUser,
+      req.body,
+      { new: true }
+    );
 
-router.delete('/delete', async (req, res, next) => {
-    try {
-        const deletedUser = await UserModel.findByIdAndDelete(req.session.currentUser) 
-        res.sendStatus(200)
-    } catch(err) {
-        res.status(500)
-        next(err)
-    }
-})
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500);
+    next(err);
+  }
+});
 
-module.exports = router
+router.delete("/delete", async (req, res, next) => {
+  try {
+    const deletedUser = await UserModel.findByIdAndDelete(
+      req.session.currentUser
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500);
+    next(err);
+  }
+});
+
+module.exports = router;

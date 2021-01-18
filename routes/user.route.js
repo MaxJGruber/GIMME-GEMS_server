@@ -29,4 +29,14 @@ router.delete("/delete", async (req, res, next) => {
   }
 });
 
+router.get('/all', async (req, res, next) => {
+    try {
+        const foundUsers = await UserModel.find()
+        res.status(200).json(foundUsers)
+    } catch (error) {
+        res.status(500)
+        next(error)
+    }
+})
+
 module.exports = router;

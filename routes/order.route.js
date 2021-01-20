@@ -72,4 +72,16 @@ router.delete("/:id/delete", async (req, res, next) => {
   }
 });
 
+router.get("/:id", async (req, res, next) => {
+  try {
+    const foundOrder = await (
+      await OrderModel.findById(req.params.id)
+    ).execPopulate("basket");
+    res.status(200).json(foundOrder);
+  } catch (err) {
+    res.status(500).json(err);
+    next(err);
+  }
+});
+
 module.exports = router;

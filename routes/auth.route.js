@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/User.model");
 const getAge = require("get-age");
@@ -39,8 +40,13 @@ router.post("/signup", async (req, res, next) => {
         agree,
       };
       const createdUser = await UserModel.create(newUser);
+      //TOKEN CODE SNIPPET
+      // var token = jwt.sign({ id: createdUser._id }, process.env.TOKEN_SECRET, {
+      //   expiresIn: 86400, // expires in 24 hours
+      // });
+      // res.status(200).json({ auth: true, token: token });
       res.status(200).json(createdUser);
-      req.session.currentUser = createdUser._id;
+      // req.session.currentUser = createdUser._id;
       res.redirect("/api/auth/isLoggedIn");
     }
   } catch (err) {
@@ -66,6 +72,18 @@ router.get("/isLoggedIn", async (req, res, next) => {
 });
 
 router.post("/signin", async (req, res, next) => {
+  //TOKEN CODE SNIPPET
+  // var token = req.headers["x-access-token"];
+  // if (!token)
+  //   return res.status(401).send({ auth: false, message: "No token provided." });
+
+  // jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
+  //   if (err)
+  //     return res
+  //       .status(500)
+  //       .send({ auth: false, message: "Failed to authenticate token." });
+  // });
+
   const { email, password } = req.body;
   try {
     const foundUser = await UserModel.findOne({ email });

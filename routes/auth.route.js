@@ -44,10 +44,9 @@ router.post("/signup", async (req, res, next) => {
       };
       // User gets created in MongoDB
       const createdUser = await UserModel.create(newUser);
-      res.json(createdUser);
+      res.status(200);
       req.session.currentUser = createdUser._id;
       res.redirect("/api/auth/isLoggedIn");
-      res.status(200);
     }
   } catch (err) {
     res.status(500);

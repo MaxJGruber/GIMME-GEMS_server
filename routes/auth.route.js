@@ -7,6 +7,7 @@ const getAge = require("get-age");
 
 const salt = 10;
 
+// ROUTE used by the user to REGISTER/SIGN UP
 router.post("/signup", async (req, res, next) => {
   const {
     email,
@@ -19,6 +20,7 @@ router.post("/signup", async (req, res, next) => {
     address,
     agree,
   } = req.body;
+  // User's age gets checked; if user is under 18, he will not be able to create an account
   const userAge = getAge(birthDate);
   try {
     const userEmail = await UserModel.findOne({ email });
@@ -27,6 +29,7 @@ router.post("/signup", async (req, res, next) => {
     } else if (userAge < 18) {
       res.status(400).json({ message: "Too young to use this app" });
     } else {
+      // We encrypt password using "bcrypt"
       const hashedPassword = bcrypt.hashSync(password, salt);
       const newUser = {
         email,
@@ -39,15 +42,12 @@ router.post("/signup", async (req, res, next) => {
         address,
         agree,
       };
+      // User gets created in MongoDB
       const createdUser = await UserModel.create(newUser);
-      //TOKEN CODE SNIPPET
-      // var token = jwt.sign({ id: createdUser._id }, process.env.TOKEN_SECRET, {
-      //   expiresIn: 86400, // expires in 24 hours
-      // });
-      // res.status(200).json({ auth: true, token: token });
-      res.status(200).json(createdUser);
-      // req.session.currentUser = createdUser._id;
+      res.json(createdUser);
+      req.session.currentUser = createdUser._id;
       res.redirect("/api/auth/isLoggedIn");
+      res.status(200);
     }
   } catch (err) {
     res.status(500);
@@ -55,12 +55,15 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
+// ROUTE to authenticate user on all routes
 router.get("/isLoggedIn", async (req, res, next) => {
   if (!req.session.currentUser)
     return res.status(401).json({ message: "Unauthorized" });
 
   const id = req.session.currentUser;
   try {
+    // Checks user's existence in MongoDB, returns information (WITHOUT password) and populating
+    //  the orders array from Orders Model.
     const foundUser = await (
       await UserModel.findById(id).select("-password")
     ).execPopulate("allOrders");
@@ -71,38 +74,28 @@ router.get("/isLoggedIn", async (req, res, next) => {
   }
 });
 
+// ROUTE used by the user to SIGN IN
 router.post("/signin", async (req, res, next) => {
-  //TOKEN CODE SNIPPET
-  // var token = req.headers["x-access-token"];
-  // if (!token)
-  //   return res.status(401).send({ auth: false, message: "No token provided." });
-
-  // jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
-  //   if (err)
-  //     return res
-  //       .status(500)
-  //       .send({ auth: false, message: "Failed to authenticate token." });
-  // });
-
   const { email, password } = req.body;
   try {
+    // Checks user's existence by checking if email (unique data) exists in MongoDB
     const foundUser = await UserModel.findOne({ email });
     console.log(foundUser);
+    // Checks if password input is valid and matches one in MongoDB user "bcrypt"
     const isValidPassword = bcrypt.compareSync(password, foundUser.password);
-    console.log(isValidPassword);
     if (!foundUser || !isValidPassword) {
       return res.status(400).json({ message: "invalid credentials" });
     }
     req.session.currentUser = foundUser._id;
     res.status(200);
     res.redirect("/api/auth/isLoggedIn");
-    // console.log(req.session.currentUser);
   } catch (err) {
     res.status(500).json(err);
     next(err);
   }
 });
 
+// ROUTE used to LOG OUT the user from his current session
 router.get("/logout", async (req, res, next) => {
   req.session.destroy(function (err) {
     err

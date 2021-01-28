@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// DB MODEL FOR AN ORDER
+
 const OrderSchema = new Schema(
   {
     totalPrice: { type: Number, default: 0 },

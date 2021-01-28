@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// DB MODEL FOR A TREE
+
 const TreeSchema = new Schema({
     name: {type: String, required: true},
     height: {type: Number, required: true},

@@ -19,6 +19,7 @@ app.use((req, res, next) => {
 const corsOptions = { origin: process.env.FRONTEND_URL, credentials: true};
 app.use(cors(corsOptions));
 
+// REQUIRING ALL ROUTE FILES
 const authRouter = require("./routes/auth.route")
 const userRouter = require("./routes/user.route")
 const treeRouter = require("./routes/tree.route")
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// We've require MongoStore to enable session usage throughout our app
 app.use(
     session({
         store: new MongoStore({mongooseConnection: mongoose.connection}),
@@ -39,6 +41,7 @@ app.use(
     })
     );
 
+// USING ALL ROUTE FILES 
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/tree", treeRouter)

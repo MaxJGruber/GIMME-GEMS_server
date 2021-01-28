@@ -4,6 +4,7 @@ if (!process.env.MONGODB_URI) {
   throw "Cannot read MONGODB_URI, the uri seems to be undefined, have you set the environment variables ?";
 }
 
+// MAKE CONNECTION WITH MONGODB THROUGH MONGOOSE
 mongoose
   .connect(process.env.MONGODB_URI, {
     useCreateIndex: true,
@@ -11,10 +12,10 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
-  .then((x) => {
+  .then((database) => {
     console.log(
       "\x1b[1m\x1b[36m%s\x1b[0m",
-      `Connection to ${x.connection.name} established.`
+      `Connection to ${database.connection.name} established.`
     );
   })
   .catch((error) => {

@@ -39,6 +39,7 @@ router.get("/one-order/:id", async (req, res, next) => {
   }
 });
 
+// ROUTE used to create an order
 router.post("/create", async (req, res, next) => {
   try {
     const createdOrder = await OrderModel.create(req.body);
@@ -49,6 +50,7 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
+// ROUTE used to edit/update selected order
 router.patch("/:id/edit", async (req, res, next) => {
   try {
     const updateOrder = await OrderModel.findByIdAndUpdate(

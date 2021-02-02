@@ -103,25 +103,41 @@ router.get("/logout", async (req, res, next) => {
   });
 });
 
+// EDIT PASSWORD DOES NOT WORK
+// PROBLEM WITH THE PATCH REQUEST ON THIS ROUTE
+// PASSWORD BCRYPT DOES NOT CHANGE IN MONGODB
+
 router.patch("/edit-password", async (req, res, next) => {
   try {
-    const {lastPassword, newPassword} = req.body
-    const foundEditUser = await UserModel.findById(req.session.currentUser)
-    const isValidEditPassword = bcrypt.compareSync(lastPassword, foundUser.password);
+    const { lastPassword, newPassword } = req.body;
+    console.log("LP", lastPassword, "NP", newPassword);
+    let foundEditUser = await UserModel.findById(req.session.currentUser);
+    const isValidEditPassword = bcrypt.compareSync(
+      lastPassword,
+      foundEditUser.password
+    );
     if (!foundEditUser || !isValidEditPassword) {
       return res.status(400).json({ message: "invalid credentials" });
+    } else {
+      const hashedEditPassword = bcrypt.hashSync(newPassword, salt);
+      // console.log(hashedEditPassword);
+      // console.log(req.session.currentUser);
+      let copyOfUser = { ...foundEditUser };
+      copyOfUser.password = hashedEditPassword;
+      console.log("FOUND EDIT USER", copyOfUser);
+      const updatedUserPass = UserModel.findByIdAndUpdate(
+        req.session.currentUser,
+        copyOfUser,
+        { new: true }
+      );
+      console.log(updatedUserPass);
+      res.status(200);
+      // res.redirect("/api/auth/isLoggedIn");
     }
-    else {
-      const hashedEditPassword = bcrypt.hashSync(newPassword, salt)
-      let newUser = {...foundEditUser, password: hashedEditPassword}
-      UserModel.findByIdAndUpdate(req.session.currentUser, newUser)
-      res.status(200)
-      res.redirect("/api/auth/isLoggedIn")
-    }
+  } catch (err) {
+    res.status(500).json(err);
+    next(err);
   }
-  catch(err) {
-    next(err)
-  }  
-})
+});
 
 module.exports = router;

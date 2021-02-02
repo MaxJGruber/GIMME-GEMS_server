@@ -104,4 +104,25 @@ router.get("/logout", async (req, res, next) => {
   });
 });
 
+router.patch("/edit-password", async (req, res, next) => {
+  try {
+    const {lastPassword, newPassword} = req.body
+    const foundEditUser = await UserModel.findById(req.session.currentUser)
+    const isValidEditPassword = bcrypt.compareSync(lastPassword, foundUser.password);
+    if (!foundEditUser || !isValidEditPassword) {
+      return res.status(400).json({ message: "invalid credentials" });
+    }
+    else {
+      const hashedEditPassword = bcrypt.hashSync(newPassword, salt)
+      let newUser = {...foundEditUser, password: hashedEditPassword}
+      UserModel.findByIdAndUpdate(req.session.currentUser, newUser)
+      res.status(200)
+      res.redirect("/api/auth/isLoggedIn")
+    }
+  }
+  catch(err) {
+    next(err)
+  }  
+})
+
 module.exports = router;

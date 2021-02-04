@@ -120,19 +120,14 @@ router.patch("/edit-password", async (req, res, next) => {
       return res.status(400).json({ message: "invalid credentials" });
     } else {
       const hashedEditPassword = bcrypt.hashSync(newPassword, salt);
-      // console.log(hashedEditPassword);
-      // console.log(req.session.currentUser);
-      let copyOfUser = { ...foundEditUser };
-      copyOfUser.password = hashedEditPassword;
-      console.log("FOUND EDIT USER", copyOfUser);
-      const updatedUserPass = UserModel.findByIdAndUpdate(
+      foundEditUser.password = hashedEditPassword;
+      const updatedUserPass = await UserModel.findByIdAndUpdate(
         req.session.currentUser,
-        copyOfUser,
+        foundEditUser,
         { new: true }
       );
       console.log(updatedUserPass);
-      res.status(200);
-      // res.redirect("/api/auth/isLoggedIn");
+      res.sendStatus(200);
     }
   } catch (err) {
     res.status(500).json(err);

@@ -10,7 +10,7 @@ router.patch("/edit", async (req, res, next) => {
       req.body,
       { new: true }
     );
-
+      
     res.status(200).json(updatedUser);
   } catch (err) {
     res.status(500);

@@ -66,7 +66,7 @@ router.patch("/:id/edit", async (req, res, next) => {
 
 router.delete("/:id/delete", async (req, res, next) => {
   try {
-    await OrderModel.findByIdAndDelete(id);
+    await OrderModel.findByIdAndDelete(req.params.id);
     res.sendStatus(200);
   } catch (err) {
     res.status(500).json(err);

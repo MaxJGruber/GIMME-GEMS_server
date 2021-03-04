@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www js"
+    "start": "nodemon ./bin/www js",
+    "build-react": "echo ---- creating react build --- && cd ../client-treender  && npm install && npm run build && cp -r ./build/* ../server/public/ && cd .."
   },
   "dependencies": {
     "bcrypt": "^5.0.0",

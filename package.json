@@ -2,9 +2,13 @@
   "name": "server",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "^12",
+    "npm": "^6"
+  },
   "scripts": {
     "start": "nodemon ./bin/www js",
-    "build-react": "echo ---- creating react build --- && cd ../client-treender  && npm install && npm run build && cp -r ./build/* ../TREENDER_server/public/ && cd .."
+    "build": "npm install && npm run build"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
